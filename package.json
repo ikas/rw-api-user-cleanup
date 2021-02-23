@@ -1,0 +1,24 @@
+{
+  "name": "rw-api-user-cleanup",
+  "version": "1.0.0",
+  "description": "Script to cleanup user DB prior to importing them to Okta.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikas/rw-api-user-cleanup.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ikas/rw-api-user-cleanup/issues"
+  },
+  "homepage": "https://github.com/ikas/rw-api-user-cleanup#readme",
+  "dependencies": {
+    "config": "^3.3.3",
+    "mongodb": "^3.6.4"
+  }
+}
