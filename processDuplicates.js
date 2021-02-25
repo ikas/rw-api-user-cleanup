@@ -34,96 +34,104 @@ function processCSVRows(rows) {
 const updateDatasets = async (client, mainId, otherId) => {
     const result = await client.db('dataset').collection('datasets').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Datasets] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} datasets for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Datasets] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
 const updateLayers = async (client, mainId, otherId) => {
     const result = await client.db('layer').collection('layers').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Layers] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} layers for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Layers] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
 const updateWidgets = async (client, mainId, otherId) => {
     const result = await client.db('widget').collection('widgets').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Widgets] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} widgets for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Widgets] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
 const updateSubscriptions = async (client, mainId, otherId) => {
     const result = await client.db('subscription').collection('subscriptions').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Subscriptions] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} subscriptions for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Subscriptions] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
-// TODO!!
-const updateFWTeams = async (client, id) => {
-    return client.db('teams').collection('teams').countDocuments({ confirmedUsers: { $elemMatch: { id } } });
+const updateFWTeams = async (client, mainId, otherId) => {
+    const result = await client.db('teams').collection('teams').update(
+        { confirmedUsers: { $elemMatch: { id: otherId } } },
+        { $set: { 'confirmedUsers.$.id': mainId } },
+    );
+
+    if (result.result.ok !== 1) {
+        log.error(`[FW Teams] Update failed for mainId ${mainId} and otherId ${otherId}`);
+    } else {
+        log.info(`[FW Teams] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
+    }
 }
 
 const updateVocabulary = async (client, mainId, otherId) => {
     const result = await client.db('vocabulary').collection('vocabularies').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Vocabulary] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} vocabularies for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Vocabulary] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
 const updateAreas = async (client, mainId, otherId) => {
     const result = await client.db('area').collection('areas').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Areas] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} vocabularies for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Areas] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
 const updateMetadata = async (client, mainId, otherId) => {
     const result = await client.db('metadata').collection('metadatas').update(
         { userId: otherId },
-        { $set: { userI: mainId } },
+        { $set: { userId: mainId } },
     );
 
     if (result.result.ok !== 1) {
-        log.error(`Update failed for mainId ${mainId} and otherId ${otherId}`);
+        log.error(`[Metadata] Update failed for mainId ${mainId} and otherId ${otherId}`);
     } else {
-        log.info(`Updated ${result.result.nModified} vocabularies for mainId ${mainId} and otherId ${otherId}`);
+        log.info(`[Metadata] Updated ${result.result.nModified} rows for mainId ${mainId} and otherId ${otherId}`);
     }
 }
 
@@ -131,9 +139,9 @@ const deleteUser = async (client, otherId) => {
     const result = await client.db('control-tower').collection('users').deleteOne({ _id: otherId });
 
     if (result.result.ok !== 1) {
-        log.error(`Delete failed otherId ${otherId}`);
+        log.error(`[Users] Delete failed otherId ${otherId}`);
     } else {
-        log.info(`Delete successful for otherId ${otherId}`);
+        log.info(`[Users] Delete successful for otherId ${otherId}`);
     }
 }
 
@@ -158,6 +166,7 @@ async function main() {
                 await updateLayers(client, user.mainId, otherId);
                 await updateWidgets(client, user.mainId, otherId);
                 await updateSubscriptions(client, user.mainId, otherId);
+                await updateFWTeams(client, user.mainId, otherId);
                 await updateVocabulary(client, user.mainId, otherId);
                 await updateAreas(client, user.mainId, otherId);
                 await updateMetadata(client, user.mainId, otherId);
