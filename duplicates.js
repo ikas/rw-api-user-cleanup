@@ -185,5 +185,5 @@ async function main() {
 }
 
 main()
-    .then(() => console.log('script ended'))
+    .then(() => console.log('Duplicates ended.'))
     .catch(err => console.error(err));

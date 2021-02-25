@@ -1,0 +1,9 @@
+{
+  "mongo": {
+    "uri": "MONGO_URL"
+  },
+  "api": {
+    "url": "BASE_URL",
+    "token": "TOKEN"
+  }
+}

@@ -40,5 +40,5 @@ async function main() {
 }
 
 main()
-    .then(() => console.log('script ended'))
+    .then(() => console.log('Clean ended.'))
     .catch(err => console.error(err));
