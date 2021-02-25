@@ -1,6 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
 const config = require('config');
 const log = require('loglevel');
+
+const getMongoClient = require('./helper');
 
 const deleteWithGoogleProvider = async (client) => {
     log.info('Preparing to delete users with provider "google-plus"...');
@@ -22,13 +23,9 @@ const deletedWithLocalProvider = async (client) => {
 
 async function main() {
     let client;
-    try{
+    try {
         log.setLevel(config.get('log.level'));
-        log.info('Establishing connection with MongoDB...');
-        client = await MongoClient.connect(config.get('mongo.uri'), {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        client = await getMongoClient();
 
         const initialCountUsers = await client.db('control-tower').collection('users').countDocuments();
         log.info(`Total number of users before running scripts: ${initialCountUsers}`);
