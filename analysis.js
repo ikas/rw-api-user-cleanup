@@ -97,7 +97,7 @@ const main = async () => {
 
             usersWithEmail = usersWithEmail.concat(users.filter(user => !!user.email).map(user => ({
                 id: user._id.toString(),
-                email: user.email,
+                email: user.email.toLowerCase(),
                 provider: user.provider,
             })));
 
@@ -108,7 +108,17 @@ const main = async () => {
 
         noEmailFile.end();
 
-        usersWithEmail = _.sortBy(usersWithEmail, 'email');
+        // Sort by email, followed by ensuring users with "local" provider are at the top
+        usersWithEmail.sort(function compare(a, b) {
+            if(a.email < b.email) { return -1; }
+            if(a.email > b.email) { return 1; }
+
+            if (a.provider === 'local') return -1;
+            if (b.provider === 'local') return 1;
+
+            return 0;
+        });
+
         let duplicateEmails = _.filter(
             usersWithEmail.map(el => el.email),
             (val, i, iteratee) => _.includes(iteratee, val, i + 1)

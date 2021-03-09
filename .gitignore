@@ -2,3 +2,5 @@ dumps/**
 node_modules/**
 input/**
 logs/**
+duplicateEmails.csv
+usersWithoutEmail.csv

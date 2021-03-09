@@ -4,6 +4,7 @@ const fs = require('fs');
 const neatCsv = require('neat-csv');
 
 const getMongoClient = require('./helper');
+const ObjectId = require('mongodb').ObjectId;
 
 function processCSVRows(rows) {
     let prevEmail = null;
@@ -32,7 +33,7 @@ function processCSVRows(rows) {
 }
 
 const updateDatasets = async (client, mainId, otherId) => {
-    const result = await client.db('dataset').collection('datasets').update(
+    const result = await client.db('dataset').collection('datasets').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -45,7 +46,7 @@ const updateDatasets = async (client, mainId, otherId) => {
 }
 
 const updateLayers = async (client, mainId, otherId) => {
-    const result = await client.db('layer').collection('layers').update(
+    const result = await client.db('layer').collection('layers').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -58,7 +59,7 @@ const updateLayers = async (client, mainId, otherId) => {
 }
 
 const updateWidgets = async (client, mainId, otherId) => {
-    const result = await client.db('widget').collection('widgets').update(
+    const result = await client.db('widget').collection('widgets').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -71,7 +72,7 @@ const updateWidgets = async (client, mainId, otherId) => {
 }
 
 const updateSubscriptions = async (client, mainId, otherId) => {
-    const result = await client.db('subscription').collection('subscriptions').update(
+    const result = await client.db('subscription').collection('subscriptions').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -84,7 +85,7 @@ const updateSubscriptions = async (client, mainId, otherId) => {
 }
 
 const updateFWTeams = async (client, mainId, otherId) => {
-    const result = await client.db('teams').collection('teams').update(
+    const result = await client.db('teams').collection('teams').updateMany(
         { confirmedUsers: { $elemMatch: { id: otherId } } },
         { $set: { 'confirmedUsers.$.id': mainId } },
     );
@@ -97,7 +98,7 @@ const updateFWTeams = async (client, mainId, otherId) => {
 }
 
 const updateVocabulary = async (client, mainId, otherId) => {
-    const result = await client.db('vocabulary').collection('vocabularies').update(
+    const result = await client.db('vocabulary').collection('vocabularies').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -110,7 +111,7 @@ const updateVocabulary = async (client, mainId, otherId) => {
 }
 
 const updateAreas = async (client, mainId, otherId) => {
-    const result = await client.db('area').collection('areas').update(
+    const result = await client.db('area').collection('areas').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -123,7 +124,7 @@ const updateAreas = async (client, mainId, otherId) => {
 }
 
 const updateMetadata = async (client, mainId, otherId) => {
-    const result = await client.db('metadata').collection('metadatas').update(
+    const result = await client.db('metadata').collection('metadatas').updateMany(
         { userId: otherId },
         { $set: { userId: mainId } },
     );
@@ -136,7 +137,7 @@ const updateMetadata = async (client, mainId, otherId) => {
 }
 
 const deleteUser = async (client, otherId) => {
-    const result = await client.db('control-tower').collection('users').deleteOne({ _id: otherId });
+    const result = await client.db('control-tower').collection('users').deleteOne({"_id" : ObjectId(otherId)});
 
     if (result.result.ok !== 1) {
         log.error(`[Users] Delete failed otherId ${otherId}`);
@@ -170,7 +171,7 @@ async function main() {
                 await updateVocabulary(client, user.mainId, otherId);
                 await updateAreas(client, user.mainId, otherId);
                 await updateMetadata(client, user.mainId, otherId);
-                await deleteUser(client, otherId)
+                await deleteUser(client, otherId);
             }
         }
 
