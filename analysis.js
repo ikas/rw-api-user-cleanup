@@ -42,17 +42,29 @@ const main = async () => {
         let usersWithEmail = [];
 
         while (users.length > 0) {
-            // Write users with no email directly to file
-            usersWithEmail = usersWithEmail.concat(users.filter(user => !!user.email).map(user => ({
-                id: user._id.toString(),
-                email: user.email.toLowerCase(),
-                provider: user.provider,
-            })));
+            for (const user of users) {
+                if (user.email) {
+                    usersWithEmail.push({
+                        id: user._id.toString(),
+                        email: user.email.toLowerCase(),
+                        provider: user.provider,
+                    });
+                } else {
+                    // Build fake email with providerId and provider
+                    usersWithEmail.push({
+                        id: user._id.toString(),
+                        email: `${user.providerId}@${user.provider}.com`,
+                        provider: user.provider,
+                    });
+                }
+            }
 
             page++;
             log.info(`Fetching page ${page}...`);
             users = await fetchPageOfUsers(client, page);
         }
+
+        log.info(`Sorting users...`);
 
         // Sort by email, followed by ensuring users with "local" provider are at the top
         usersWithEmail.sort(function compare(a, b) {
@@ -65,12 +77,15 @@ const main = async () => {
             return 0;
         });
 
+        log.info(`Finding duplicates...`);
         let duplicateEmails = _.filter(
             usersWithEmail.map(el => el.email),
             (val, i, iteratee) => _.includes(iteratee, val, i + 1)
         );
 
         let allDuplicateEmails = usersWithEmail.filter(user => duplicateEmails.includes(user.email));
+
+        log.info(`Writing to file...`);
         allDuplicateEmails.forEach(dup => duplicatesFile.write(`${Object.values(dup).join(',')}\n`));
         duplicatesFile.end();
 
