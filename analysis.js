@@ -12,13 +12,6 @@ const cleanDuplicatesFile = () => {
     return duplicatesFile;
 };
 
-const cleanUsersWithNoEmailFile = () => {
-    const noEmailFile = fs.createWriteStream('usersWithoutEmail.csv');
-    fs.truncateSync('usersWithoutEmail.csv', 0);
-    noEmailFile.write('Id,Provider\n');
-    return noEmailFile;
-};
-
 const fetchPageOfUsers = async (client, page) => {
     const limit = 200;
     const skip = (page - 1) * limit;
@@ -43,7 +36,6 @@ const main = async () => {
         client = await getMongoClient();
 
         const duplicatesFile = cleanDuplicatesFile();
-        const noEmailFile = cleanUsersWithNoEmailFile();
 
         let page = 1;
         let users = await fetchPageOfUsers(client, page);
@@ -51,8 +43,6 @@ const main = async () => {
 
         while (users.length > 0) {
             // Write users with no email directly to file
-            users.filter(user => !user.email).forEach(user => { noEmailFile.write(`${user._id.toString()},${user.provider}\n`); });
-
             usersWithEmail = usersWithEmail.concat(users.filter(user => !!user.email).map(user => ({
                 id: user._id.toString(),
                 email: user.email.toLowerCase(),
@@ -63,8 +53,6 @@ const main = async () => {
             log.info(`Fetching page ${page}...`);
             users = await fetchPageOfUsers(client, page);
         }
-
-        noEmailFile.end();
 
         // Sort by email, followed by ensuring users with "local" provider are at the top
         usersWithEmail.sort(function compare(a, b) {
