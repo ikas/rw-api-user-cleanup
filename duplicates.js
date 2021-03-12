@@ -163,14 +163,18 @@ async function main() {
             log.info(`Processing user with email: ${user.email}`);
             for (const otherId of user.otherIds) {
                 log.info(`Converting owner ID ${otherId} to mainId ${user.mainId}...`);
-                await updateDatasets(client, user.mainId, otherId);
-                await updateLayers(client, user.mainId, otherId);
-                await updateWidgets(client, user.mainId, otherId);
-                await updateSubscriptions(client, user.mainId, otherId);
-                await updateFWTeams(client, user.mainId, otherId);
-                await updateVocabulary(client, user.mainId, otherId);
-                await updateAreas(client, user.mainId, otherId);
-                await updateMetadata(client, user.mainId, otherId);
+
+                await Promise.all([
+                    await updateDatasets(client, user.mainId, otherId),
+                    await updateLayers(client, user.mainId, otherId),
+                    await updateWidgets(client, user.mainId, otherId),
+                    await updateSubscriptions(client, user.mainId, otherId),
+                    await updateFWTeams(client, user.mainId, otherId),
+                    await updateVocabulary(client, user.mainId, otherId),
+                    await updateAreas(client, user.mainId, otherId),
+                    await updateMetadata(client, user.mainId, otherId),
+                ]);
+
                 await deleteUser(client, otherId);
             }
         }
